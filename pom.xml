@@ -53,6 +53,7 @@
           <version>4.0.1</version> <!-- ou a versão mais recente disponível -->
           <scope>provided</scope>
       </dependency>
+      
 		
 		<dependency>
            <groupId>org.projectlombok</groupId>
@@ -117,9 +118,6 @@
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
-
-	
-
       
 
 

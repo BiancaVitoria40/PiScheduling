@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.teste.api.model.entidades.Pedido;
-import com.teste.api.model.repositorie.PedidoRepository;
+import com.teste.api.model.repository.PedidoRepository;
 
 @Service
 public class PedidoService {

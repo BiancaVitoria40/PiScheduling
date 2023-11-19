@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.teste.api.exception.RepositoryNotInjectedException;
 import com.teste.api.model.dto.LocalDTO;
 import com.teste.api.model.entidades.Local;
 import com.teste.api.service.LocalService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/local")
@@ -22,7 +26,7 @@ public class LocalController {
 	private LocalService localService;
 	
 	@PostMapping
-	public ResponseEntity<Local> setLocal(@RequestBody Local novoLocal) {
+	public ResponseEntity<Local> setLocal(@Valid @RequestBody Local novoLocal) {
 		Local localAdicionado = localService.adicionaLocal(novoLocal);
 		return ResponseEntity.status(HttpStatus.CREATED).body(localAdicionado);
 	}
@@ -36,10 +40,9 @@ public class LocalController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<Local> setAtualizaLocal(@RequestBody Local atualizaLocal) {
+	public ResponseEntity<Local> setAtualizaLocal(@Valid @RequestBody Local atualizaLocal) throws RepositoryNotInjectedException {
 		
 		 localService.atualizaLocal(atualizaLocal);
-	
 		return new ResponseEntity<Local>(atualizaLocal, HttpStatus.OK);
 		
 	}

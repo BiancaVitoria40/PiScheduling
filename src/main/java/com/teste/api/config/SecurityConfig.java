@@ -13,7 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.teste.api.model.repositorie.SecurityFilter;
+
+import com.teste.api.model.repository.SecurityFilter;
 
 @Configuration
 @EnableWebSecurity

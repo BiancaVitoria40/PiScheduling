@@ -6,10 +6,16 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.teste.api.exception.IngressoNotFoundException;
+import com.teste.api.exception.ModelMapperNotConfiguredException;
+import com.teste.api.exception.NomeIngressoSetorInvalidoException;
+import com.teste.api.exception.RepositoryNotInjectedException;
+import com.teste.api.exception.SetorNotFoundException;
 import com.teste.api.model.dto.IngressoDTO;
 import com.teste.api.model.entidades.Ingresso;
 import com.teste.api.model.entidades.Setores;
-import com.teste.api.model.repositorie.IngressoRepository;
+import com.teste.api.model.repository.IngressoRepository;
 
 @Service
 public class IngressoService {
@@ -25,49 +31,65 @@ public class IngressoService {
 
 	@SuppressWarnings("unused")
 	private ServiceUtils serviceUtils;
+	
+	
 
-	public Ingresso criaIngresso(Ingresso ingresso) {
+	public Ingresso criaIngresso(Ingresso ingresso) throws NomeIngressoSetorInvalidoException, SetorNotFoundException, RepositoryNotInjectedException {
 
 		Optional<Setores> setor = setorService.obetemSetorPorId(ingresso.getSetor().getId());
 
-		if (ingresso.getNome().equalsIgnoreCase(setor.get().getNome())) { // erro esta chegando aqui testado na hora do															// almoço
-			return ingressoRepository.save(ingresso);
-		
-		} else {
-			return null;
+
+		   if (!setor.isPresent()) {
+		       throw new SetorNotFoundException("Setor com id " + ingresso.getSetor().getId() + " não encontrado");
+		   }
+
+		   if (!ingresso.getNome().equalsIgnoreCase(setor.get().getNome())) {
+		       throw new NomeIngressoSetorInvalidoException("O nome do ingresso não corresponde ao nome do setor");
+		   }
+
+		   return ingressoRepository.save(ingresso);
 		}
-	}
 
-	public IngressoDTO obterIngressoPorIdDTO(int id) {
+    public IngressoDTO obterIngressoPorIdDTO(int id) {
+		   Optional<Ingresso> optionalIngresso = ingressoRepository.findById(id);
 
-		Ingresso ingresso = ingressoRepository.findById(id).get();
+		   if (!optionalIngresso.isPresent()) {
+		       throw new IngressoNotFoundException("Ingresso com id " + id + " não encontrado");
+		   }
 
-		return modelMApper.map(ingresso, IngressoDTO.class);
-	}
+		   Ingresso ingresso = optionalIngresso.get();
+		   return modelMApper.map(ingresso, IngressoDTO.class);
+     }
+	
 
-	public List<IngressoDTO> listarIngressos() {
+    public List<IngressoDTO> listarIngressos() throws RepositoryNotInjectedException, ModelMapperNotConfiguredException {
+    	  if (ingressoRepository == null) {
+    	      throw new RepositoryNotInjectedException("IngressoRepository não foi injetado");
+    	  }
 
-		List<Ingresso> ingressos = this.ingressoRepository.findAll();
+    	  if (modelMApper == null) {
+    	      throw new ModelMapperNotConfiguredException("ModelMapper não foi configurado");
+    	  }
 
-		return ingressos.stream().map(ingresso -> modelMApper.map(ingresso, IngressoDTO.class))
-				.collect(Collectors.toList());
+    	  List<Ingresso> ingressos = this.ingressoRepository.findAll();
 
-	}
+    	  return ingressos.stream().map(ingresso -> modelMApper.map(ingresso, IngressoDTO.class))
+    	          .collect(Collectors.toList());
+    	}
 
-	public Optional<Ingresso> obterIngressoPorId(int id) {
-		return ingressoRepository.findById(id);
-	}
 
-	public Optional<Ingresso> atualizaIngresso(Ingresso atualizaIngresso) {
 
-		return ServiceUtils.atualizarEntidade(atualizaIngresso.getId(), atualizaIngresso, ingressoRepository);
+    public Optional<Ingresso> atualizaIngresso(Ingresso atualizaIngresso) throws IngressoNotFoundException, RepositoryNotInjectedException {
+    	 
+    	if (atualizaIngresso == null) {
+    	     throw new IngressoNotFoundException("Ingresso fornecido é não existe");
+    	 }
+    	 if (ingressoRepository == null) {
+    	     throw new RepositoryNotInjectedException("IngressoRepository não foi injetado");
+    	 }
+    	 return ServiceUtils.atualizarEntidade(atualizaIngresso.getId(), atualizaIngresso, ingressoRepository);
+    	 
+    	}
 
-//		return obterIngressoPorId(atualizaIngresso.getId()).map(ingresso -> {
-//			BeanUtils.copyProperties(atualizaIngresso, ingresso, "id");
-//			return Optional.of(ingressoRepository.save(ingresso));
-//
-//		}).orElse(Optional.empty());
-//
-	}
 
 }

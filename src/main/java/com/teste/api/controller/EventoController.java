@@ -2,7 +2,6 @@ package com.teste.api.controller;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.teste.api.exception.RepositoryNotInjectedException;
 import com.teste.api.model.dto.EventoFinalDTO;
 import com.teste.api.model.entidades.Evento;
-import com.teste.api.service.EventoService;
+import com.teste.api.service.EventoServiceImpl;
+
 
 @RestController
 @RequestMapping("/api/evento")
 public class EventoController {
 
 	@Autowired
-	private EventoService eventoService;
+	private EventoServiceImpl eventoService;
 
 
-	@GetMapping(value = "buscaEvento")
+	@GetMapping("/list")
 	public ResponseEntity<List<EventoFinalDTO>> getEvento() {
 
 		List<EventoFinalDTO> eventoDto = eventoService.dadosEvento();
@@ -35,47 +37,36 @@ public class EventoController {
 	}
 
 	@GetMapping("/buscarPorId/{id}")
-	public ResponseEntity<EventoFinalDTO> getEventoPorId(@PathVariable int id) {
+	public ResponseEntity<Evento> getEventoPorId(@PathVariable int id) {
 
-		EventoFinalDTO eventoDto = eventoService.buscaPorId(id);
-
-		return new ResponseEntity<EventoFinalDTO>(eventoDto, HttpStatus.OK);
+		Evento eventoDto = eventoService.recuperarEvento(id);
+		return new ResponseEntity<Evento>(eventoDto, HttpStatus.OK);
 	}
 
-	@PostMapping
-	public ResponseEntity<Evento> setEvento(@RequestPart Evento novoEvento, @RequestPart MultipartFile imagem) {
-
-		try {
-			novoEvento.setImagem(imagem.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-		Evento eventoAdicionado = eventoService.criarEvento(novoEvento);
-		return ResponseEntity.status(HttpStatus.CREATED).body(eventoAdicionado);
+	@PostMapping("/cria")
+	public ResponseEntity<String> setEvento(@RequestPart Evento novoEvento, @RequestPart MultipartFile imagem) {
+	   try {
+	       novoEvento.setImagem(imagem.getBytes());
+	   } catch (IOException e) {
+	       e.printStackTrace();
+	       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar a imagem: " + e.getMessage());
+	   }
+	   Evento eventoAdicionado = eventoService.criarEvento(novoEvento);
+	   return ResponseEntity.status(HttpStatus.CREATED).body("Evento criado com sucesso: " + eventoAdicionado);
 	}
+
 
 	@PutMapping("/setor")
-	public ResponseEntity<Evento> setAtualizaEvento(@RequestPart Evento atualizaEvento) {
+	public ResponseEntity<String> setAtualizaEvento(@RequestPart Evento atualizaEvento) throws RepositoryNotInjectedException {
 
 		eventoService.atualizaEvento(atualizaEvento);
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(atualizaEvento);
+		
+		if(atualizaEvento == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Evento não encontrado!");
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).body("Evento atualizado");
 
 	}
 
 }
 
-//private EventoInicialDTO eventoTeste(Evento evento) {
-//return modelMapper.map(evento, EventoInicialDTO.class);
-//
-//}
-//
-//
-//@GetMapping
-//public List<EventoInicialDTO> listarTodos(){
-//return eventoRepository.findAll()
-//		.stream()
-//		.map(this:: eventoTeste)
-//		.collect(Collectors.toList());
-//}
