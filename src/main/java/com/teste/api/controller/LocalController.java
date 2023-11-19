@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.teste.api.exception.RepositoryNotInjectedException;
 import com.teste.api.model.dto.LocalDTO;
 import com.teste.api.model.entidades.Local;
@@ -32,7 +31,7 @@ public class LocalController {
 	}
 	
 	
-	@GetMapping("puscaPorId/{id}")
+	@GetMapping("buscaPorId/{id}")
 	public ResponseEntity<LocalDTO> getLocalPorID(@PathVariable int id){
 		LocalDTO localDTO = localService.buscarLocalPorIdDTO(id);
 		

@@ -4,12 +4,10 @@ package com.teste.api.model.entidades;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +27,7 @@ public class Usuario implements UserDetails{
 	
 	
 	@OneToMany(mappedBy = "usuario")
-    private List<Reserva> itemCarrinho = new ArrayList<Reserva>();
+    private List<ItemCarrinho> itemCarrinho = new ArrayList<ItemCarrinho>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,8 +50,6 @@ public class Usuario implements UserDetails{
 	@NotBlank(message =  "A inserção do telefone é obrigatória!")
 	@Pattern(regexp = "^\\([0-9]{2}\\) [0-9]{4}-[0-9]{4}$", message = "Número de telefone inválido")
 	private String telefone;
-	
-	
 	
 	public Usuario() {
 		super();

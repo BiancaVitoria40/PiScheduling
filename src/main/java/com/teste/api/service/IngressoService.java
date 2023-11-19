@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.teste.api.exception.IngressoNotFoundException;
 import com.teste.api.exception.ModelMapperNotConfiguredException;
 import com.teste.api.exception.NomeIngressoSetorInvalidoException;
@@ -60,6 +59,10 @@ public class IngressoService {
 		   Ingresso ingresso = optionalIngresso.get();
 		   return modelMApper.map(ingresso, IngressoDTO.class);
      }
+    
+	public Optional<Ingresso> obterIngressoPorId(int id) {
+		return ingressoRepository.findById(id);
+	}
 	
 
     public List<IngressoDTO> listarIngressos() throws RepositoryNotInjectedException, ModelMapperNotConfiguredException {

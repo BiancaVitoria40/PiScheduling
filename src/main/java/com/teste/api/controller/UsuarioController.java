@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.teste.api.exception.RepositoryNotInjectedException;
 import com.teste.api.exception.ServiceNotInjectedException;
 import com.teste.api.exception.UsuarioNotFoundException;
@@ -25,6 +26,7 @@ import com.teste.api.model.dto.CriarUsuarioDTO;
 import com.teste.api.model.dto.LoginResponseDTO;
 import com.teste.api.model.entidades.Usuario;
 import com.teste.api.model.repository.UsuarioRepository;
+import com.teste.api.service.ItemCarrinhoService;
 import com.teste.api.service.TokenService;
 import com.teste.api.service.UsuarioService;
 
@@ -40,6 +42,9 @@ public class UsuarioController {
 	private AuthenticationManager authenticationManager;
 	
 	@Autowired
+	private final ItemCarrinhoService itemCarrinhoService;
+	
+	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
 	@Autowired
@@ -47,8 +52,13 @@ public class UsuarioController {
 	
 	@Autowired
 	private TokenService tokenService;
-
 	
+	
+	public UsuarioController(UsuarioService usuarioService, ItemCarrinhoService itemCarrinhoService) {
+		super();
+		this.usuarioService = usuarioService;
+		this.itemCarrinhoService = itemCarrinhoService;
+	}
 	
     @PostMapping("/auth/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {

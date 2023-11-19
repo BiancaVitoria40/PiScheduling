@@ -2,12 +2,12 @@ package com.teste.api.model.entidades;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -30,11 +30,11 @@ public class Ingresso {
 	@ManyToOne
 	@JoinColumn(name = "setor_id")
 	private Setores setor;
-
-	@ManyToOne
-	@JoinColumn(name = "reserva_id")
-	private Reserva reserva;
+	
+	@ManyToMany(mappedBy = "ingressos")
+	private Set<ItemCarrinho> itemCarrinho = new HashSet<ItemCarrinho>();
     
+	@NotBlank(message = "Por favor inserir o nome!")
 	private String nome;
     
 	@NotBlank(message = "Por favor inserir o valor do ingresso!")
@@ -49,12 +49,12 @@ public class Ingresso {
 
 	}
 
-	public Ingresso(Evento evento, Setores setor, Reserva reserva, String nome, double valor, String tipoIngresso,
+	public Ingresso(Evento evento, Setores setor, Set<ItemCarrinho> reserva, String nome, double valor, String tipoIngresso,
 			String status) {
 		super();
 		this.evento = evento;
 		this.setor = setor;
-		this.reserva = reserva;
+		this.itemCarrinho = reserva;
 		this.nome = nome;
 		this.valor = valor;
 		this.tipoIngresso = tipoIngresso;

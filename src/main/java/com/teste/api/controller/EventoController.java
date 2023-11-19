@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.teste.api.exception.RepositoryNotInjectedException;
 import com.teste.api.model.dto.EventoFinalDTO;
 import com.teste.api.model.entidades.Evento;
@@ -37,10 +36,10 @@ public class EventoController {
 	}
 
 	@GetMapping("/buscarPorId/{id}")
-	public ResponseEntity<Evento> getEventoPorId(@PathVariable int id) {
+	public ResponseEntity<EventoFinalDTO> getEventoPorId(@PathVariable int id) {
 
-		Evento eventoDto = eventoService.recuperarEvento(id);
-		return new ResponseEntity<Evento>(eventoDto, HttpStatus.OK);
+		EventoFinalDTO eventoDto = eventoService.buscaPorId(id);
+		return new ResponseEntity<EventoFinalDTO>(eventoDto, HttpStatus.OK);
 	}
 
 	@PostMapping("/cria")

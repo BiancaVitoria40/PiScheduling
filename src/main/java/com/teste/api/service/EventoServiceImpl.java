@@ -16,7 +16,7 @@ import com.teste.api.model.entidades.Setores;
 import com.teste.api.model.repository.EventoRepository;
 
 @Service
-public class EventoServiceImpl implements EventoService {
+public class EventoServiceImpl {
 
 	@Autowired
 	private EventoRepository eventoRepository; // injeção de dependencia
@@ -31,23 +31,11 @@ public class EventoServiceImpl implements EventoService {
 	public Evento criarEvento(Evento evento) {
 		return eventoRepository.save(evento);
 	}
-	
-	@Override
-	public Evento recuperarEvento(int id) {
-		Optional<Evento> optionalEvento = eventoRepository.findById(id);
-		
-		if (optionalEvento.isPresent()) {
-			return optionalEvento.get();
-		} else {
-			throw new EventoNotFoundException("Evento com id " + id + " não encontrado");
-		}
-	}
-	
 
 
 	public Evento atualizaEvento(Evento atualizaEvento) throws RepositoryNotInjectedException {
 
-		Evento evento = recuperarEvento(atualizaEvento.getId());
+		Evento evento = buscaEventoPorId(atualizaEvento.getId());
 		
 		if (evento == null) {
 		    throw new EventoNotFoundException("Evento com id " + atualizaEvento.getId() + " não encontrado");
@@ -64,6 +52,17 @@ public class EventoServiceImpl implements EventoService {
 		return criarEvento(evento);
 
 	}
+	
+	public EventoFinalDTO buscaPorId(int id) {
+		   Optional<Evento> optionalEvento = this.eventoRepository.findById(id);
+		   if (optionalEvento.isPresent()) {
+		       Evento evento = optionalEvento.get();
+		       return modelMapper.map(evento, EventoFinalDTO.class);
+		   } else {
+		       throw new EventoNotFoundException("Evento id: " + id + "não encontrado!");
+		   }
+		}
+
 
 	public List<EventoFinalDTO> dadosEvento() {
 		
@@ -76,6 +75,11 @@ public class EventoServiceImpl implements EventoService {
 		           .map(evento -> modelMapper.map(evento, EventoFinalDTO.class)) // converte cada evento para um eventoDTO
 		           .collect(Collectors.toList()); // coleta tds os eventos em uma lista
 		}
+	
+	public Evento buscaEventoPorId(int id) {
+		return eventoRepository.findById(id).get();
+
+	}
 
 
 }
