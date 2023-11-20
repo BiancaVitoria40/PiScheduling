@@ -3,6 +3,9 @@ package com.teste.api.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.teste.api.exception.RepositoryNotInjectedException;
 import com.teste.api.exception.UsuarioNotFoundException;
@@ -15,6 +18,11 @@ public class UsuarioService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 	
 	public List<Usuario> listClient() throws RepositoryNotInjectedException{
@@ -24,6 +32,20 @@ public class UsuarioService {
 		List<Usuario> list = this.usuarioRepository.findAll();
 		return list;
 		
+	}
+	
+	public Usuario criaUsuario(Usuario novoUsuario) {
+		return usuarioRepository.save(novoUsuario);
+		
+	}
+	
+	public boolean loginUsuario(String login, String senha) {
+		Usuario usuario = usuarioRepository.findByLogin(login);
+		if(usuario == null) {
+			throw new UsuarioNotFoundException("Usuário não existe!");
+		}else {
+			return usuario.getSenha().equals(senha);
+		}
 	}
 
 	public Usuario obterUsuarioPorId(Integer id) throws RepositoryNotInjectedException  {

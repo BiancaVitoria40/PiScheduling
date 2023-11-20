@@ -5,7 +5,7 @@ import com.teste.api.model.entidades.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 	
-	Usuario findByLogin(String email);
+	Usuario findByLogin(String login);
 
 //	@Query("SELECT c FROM Cliente c WHERE c.email = :email")
 //    Optional<Usuario> findByEmail(@Param("email") String email);
