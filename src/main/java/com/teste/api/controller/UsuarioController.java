@@ -1,6 +1,7 @@
 package com.teste.api.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,13 +63,13 @@ public class UsuarioController {
     }
     
     @PostMapping("/criarUsuario")
-	public ResponseEntity<String> criaUsuario(@RequestBody @Valid CriarUsuarioDTO data) throws NomeIngressoSetorInvalidoException, SetorNotFoundException, RepositoryNotInjectedException {
-		  if (usuarioRepository.findByLogin(data.login()) != null) {
+	public ResponseEntity<String> criaUsuario(@RequestBody @Valid CriarUsuarioDTO data) throws NomeIngressoSetorInvalidoException {
+		  if (usuarioRepository.findByLogin(data.getLogin()) != null) {
 	            return ResponseEntity.badRequest().body("E-mail já está em uso.");
 	        }
 		 
-		  String encryptedPassword = new BCryptPasswordEncoder().encode(data.senha());
-		  Usuario novoUsuario = new Usuario(data.login(), encryptedPassword);
+		  String encryptedPassword = new BCryptPasswordEncoder().encode(data.getSenha());
+		  Usuario novoUsuario = new Usuario(0, data.getLogin(), encryptedPassword, data.getNome(), data.getCpf(), data.getTelefone());
 		  usuarioRepository.save(novoUsuario);
 		  
 		return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado com sucesso!");
